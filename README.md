@@ -2,6 +2,8 @@
 
 A sample solution that makes Amazon Cognito user pool users searchable via Amazon OpenSearch Serverless. User profile data is synced to OpenSearch through three complementary paths: sign-up confirmation, sign-in triggers, and admin action capture via CloudTrail + EventBridge.
 
+![View the demo](./demo.gif)
+
 ## Architecture
 
 ```
@@ -9,32 +11,32 @@ A sample solution that makes Amazon Cognito user pool users searchable via Amazo
 │                        Data Ingestion                           │
 │                                                                 │
 │  User signs up ──► POST_CONFIRMATION trigger ──► Lambda         │
-│                    (creates initial DynamoDB record)             │
+│                    (creates initial DynamoDB record)            │
 │                                                                 │
 │  User signs in ──► PRE_TOKEN_GENERATION trigger ──► Lambda      │
-│                    (updates login-specific fields only:          │
-│                     lastLoginTimestamp, appClientLogins)         │
+│                    (updates login-specific fields only:         │
+│                     lastLoginTimestamp, appClientLogins)        │
 │                                                                 │
 │  Admin action ──► CloudTrail ──► EventBridge ──► Lambda         │
 │  (Console/CLI)     (AdminCreateUser, AdminDeleteUser,           │
-│                     AdminDisableUser, AdminEnableUser,           │
-│                     AdminAddUserToGroup,                         │
-│                     AdminRemoveUserFromGroup,                    │
-│                     AdminUpdateUserAttributes)                   │
-│                    (re-reads full state from Cognito,            │
-│                     updates profile fields in DynamoDB)          │
+│                     AdminDisableUser, AdminEnableUser,          │
+│                     AdminAddUserToGroup,                        │
+│                     AdminRemoveUserFromGroup,                   │
+│                     AdminUpdateUserAttributes)                  │
+│                    (re-reads full state from Cognito,           │
+│                     updates profile fields in DynamoDB)         │
 │                                                                 │
 │                           │                                     │
 │                           ▼                                     │
-│                    DynamoDB (UserDetailsTable)                   │
+│                    DynamoDB (UserDetailsTable)                  │
 │                           │                                     │
-│                    DynamoDB Stream                               │
-│                           │                                     │
-│                           ▼                                     │
-│                    Lambda: OSS ingest                            │
+│                    DynamoDB Stream                              │
 │                           │                                     │
 │                           ▼                                     │
-│              OpenSearch Serverless (search index)                │
+│                    Lambda: OSS ingest                           │
+│                           │                                     │
+│                           ▼                                     │
+│              OpenSearch Serverless (search index)               │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
